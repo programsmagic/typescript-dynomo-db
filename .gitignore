@@ -1,0 +1,15 @@
+# Node.js dependencies
+node_modules/
+
+# TypeScript build output
+dist/
+
+# Editor and IDE files
+.vscode/
+.idea/
+
+# Environment variables
+.env
+
+# Ignore any files ending with .log
+*.log

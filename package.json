@@ -1,0 +1,20 @@
+{
+  "name": "dynamodb-typescript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^20.12.7",
+    "aws-sdk": "^2.1608.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}
