@@ -1,6 +1,6 @@
-import { DynamoDB } from 'aws-sdk';
+import createDynamoDBClient from './configs/dynamoDB';
 
-const dynamoDB = new DynamoDB();
+const dynamoDB = createDynamoDBClient();
 
 interface TransactionInput {
     idempotentKey: string;
@@ -10,8 +10,6 @@ interface TransactionInput {
 }
 
 async function processTransaction(input: TransactionInput): Promise<void> {
-    // Implement transaction processing logic
-    // For simplicity, let's assume the transaction is always successful and update the balance directly in DynamoDB
     const { idempotentKey, userId, amount, type } = input;
 
     const updateParams = {
@@ -21,15 +19,21 @@ async function processTransaction(input: TransactionInput): Promise<void> {
         ExpressionAttributeValues: {
             ':val': { N: String(Math.abs(amount)) }
         },
+        ConditionExpression: type === 'debit' ? 'balance >= :val' : null, // Check if balance is sufficient for debit
         ReturnValues: 'UPDATED_NEW'
     };
 
     try {
-        await dynamoDB.updateItem(updateParams).promise();
+        await dynamoDB.updateItem(updateParams as AWS.DynamoDB.DocumentClient.UpdateItemInput).promise();
         console.log(`Transaction successful for user ${userId}: ${type} ${amount}`);
     } catch (error) {
-        console.error("Error processing transaction:", error);
-        throw new Error("Error processing transaction");
+        if ((error as any).code === 'ConditionalCheckFailedException') {
+            console.error(`Insufficient balance for user ${userId} to perform ${type} transaction`);
+            throw new Error(`Insufficient balance for user ${userId} to perform ${type} transaction`);
+        } else {
+            console.error("Error processing transaction:", error);
+            throw new Error("Error processing transaction");
+        }
     }
 }
 

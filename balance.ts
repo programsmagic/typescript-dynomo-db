@@ -1,7 +1,6 @@
-import { DynamoDB } from 'aws-sdk';
-
-const dynamoDB = new DynamoDB();
-
+import createDynamoDBClient from './configs/dynamoDB';
+// Create DynamoDB client
+const dynamoDB = createDynamoDBClient();
 interface RetrieveBalanceInput {
     userId: string;
 }
